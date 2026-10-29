@@ -2,7 +2,7 @@
 
 A quiet, interactive sketchbook for the web. Browse ink studies in a desktop spread or turn curled paper on your phone.
 
-**[Open the live demo](https://niyamax.github.io/sketchbook-demo/)** · [How the book works](docs/rendering-notes.md) · [Contributing](CONTRIBUTING.md)
+**[Open the live demo](https://niyamax.github.io/sketchbook/)** · [How the book works](docs/rendering-notes.md) · [Contributing](CONTRIBUTING.md)
 
 ## Previews
 
@@ -100,18 +100,18 @@ Built with React, TypeScript, Vite, Three.js, Motion and react-pageflip. The mob
 
 ## Deployment
 
-The [live demo](https://niyamax.github.io/sketchbook-demo/) is served from a separate compiled-site repository. This source repository remains private while its release is reviewed.
+GitHub Actions checks changes and publishes `main` to [GitHub Pages](https://niyamax.github.io/sketchbook/). The Pages build uses `/sketchbook/` as its asset base; local development uses `/`.
 
-A Pages workflow is prepared in `.github/workflows/pages.yml`. It deliberately skips private repositories. After publication is approved, enable GitHub Pages with GitHub Actions as the source; future pushes to `main` can then build and deploy the source repository.
-
-The prepared source-site build uses `/sketchbook/` as its asset base. Local development uses `/`. To inspect that build locally:
+To inspect that build locally:
 
 ```sh
 GITHUB_PAGES=true npm run build
 GITHUB_PAGES=true npm run preview
 ```
 
-Open `/sketchbook/` on the preview server. For a fork, change the Pages base in `vite.config.ts` to match your repository name.
+Open `/sketchbook/` on the preview server. For a fork, change the Pages base in `vite.config.ts` to match your repository name and enable **GitHub Actions** as the Pages source.
+
+The [earlier demo URL](https://niyamax.github.io/sketchbook-demo/) remains available for existing links.
 
 ## Credits and license
 
