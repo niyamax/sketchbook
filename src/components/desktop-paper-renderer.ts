@@ -3,7 +3,7 @@ import { PAGE_ASPECT as H } from '../sketch/geometry';
 import { BOOK_LIGHT } from '../sketch/lighting';
 import { restingBookPose, turningBookPose } from '../sketch/book-pose';
 import { addBookLight, createBookRenderer, createPaperMaterial, paperStock, paperTexture } from './book-rendering';
-const COLS = 64, ROWS = 24, SCALE_X = 1.35, SCALE_Y = 1.6;
+const COLS = 64, CORNER_ROWS = 12, ROWS = 16 + CORNER_ROWS * 2, SCALE_X = 1.35, SCALE_Y = 1.6;
 export function createDesktopPaperRenderer(host: HTMLElement, width: number, height: number, sources: HTMLElement[]) {
     const renderer = createBookRenderer(host, width * 2 * SCALE_X, height * SCALE_Y);
     const camera = new THREE.PerspectiveCamera(2 * Math.atan(H * SCALE_Y / (2 * 6.2)) * 180 / Math.PI, 2 * width * SCALE_X / (height * SCALE_Y), 1, 12);
@@ -19,16 +19,11 @@ export function createDesktopPaperRenderer(host: HTMLElement, width: number, hei
     let disposed = false;
     function leaf() {
         const geometry = new THREE.PlaneGeometry(1, H, COLS, ROWS);
-        const uv = geometry.attributes.uv;
-        for (let i = 0; i < uv.count; i++) {
-            const v = uv.getY(i), edge = 4 / ROWS;
-            uv.setY(i, v < edge ? v / edge * .035 : v > 1 - edge ? 1 - (1 - v) / edge * .035 : .035 + (v - edge) / (1 - 2 * edge) * .93);
-        }
         const paper = createPaperMaterial(textures[1], stock);
         const mesh = new THREE.Mesh(geometry, paper.material);
         mesh.frustumCulled = false;
         book.add(mesh);
-        return { ...paper, geometry, mesh };
+        return { ...paper, geometry, mesh, cornerMode: null as boolean | null };
     }
     type Leaf = ReturnType<typeof leaf>;
     const left = leaf(), right = leaf(), moving = leaf(), leftBoard = leaf(), rightBoard = leaf();
@@ -47,6 +42,19 @@ export function createDesktopPaperRenderer(host: HTMLElement, width: number, hei
     }
     function shape(paper: Leaf, side: -1 | 1, progress = 0, hard = false, grab = 0, oversize = 1) {
         const points = paper.geometry.attributes.position, uv = paper.geometry.attributes.uv;
+        if (paper.cornerMode !== hard) {
+            // Sample the quarter-circle by angle, including both tangent
+            // endpoints. Extra rows stay in the corners; the centre keeps
+            // its original 16 rows and the curl keeps its 64 columns.
+            const edge = CORNER_ROWS / ROWS, radius = (hard ? .036 : .032) / H;
+            const arc = (t: number) => radius * (1 - Math.cos(t * Math.PI / 2));
+            for (let i = 0; i < uv.count; i++) {
+                const v = 1 - Math.floor(i / (COLS + 1)) / ROWS;
+                uv.setY(i, v <= edge ? arc(v / edge) : v >= 1 - edge ? 1 - arc((1 - v) / edge) : radius + (v - edge) / (1 - 2 * edge) * (1 - 2 * radius));
+            }
+            uv.needsUpdate = true;
+            paper.cornerMode = hard;
+        }
         for (let i = 0; i < points.count; i++) {
             const u = uv.getX(i), v = uv.getY(i), y = (v - .5) * H * oversize;
             const corner = (hard ? .036 : .032) * oversize;
