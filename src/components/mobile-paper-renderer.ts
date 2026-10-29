@@ -1,6 +1,6 @@
 import { BOOK_LIGHT } from "../sketch/lighting";
 import { PAGE_ASPECT } from "../sketch/geometry";
-import {paperStock,paperTexture,createPaperMaterial,createBookRenderer,addBookLight} from "./book-rendering";
+import {paperStock,paperTexture,createPaperMaterial,createBookRenderer,addBookLight,createCoverEdge} from "./book-rendering";
 import * as THREE from "three";
 
 // A page travels through 360°: it rolls around a tapered spine and comes to
@@ -16,7 +16,6 @@ const paperFoldRadius = (page: number) => 0.05 + Math.min(page, 40) * 0.00065;
 const COVER_THICKNESS = 0.002;
 const PAGE_COLUMNS = 64;
 const PAGE_ROWS = 32;
-const PAGE_STRIDE = PAGE_COLUMNS + 1;
 // Give the tight spine as many segments as the broad free panel.
 const columnU = (u: number) =>
   u <= 1 / 3
@@ -301,58 +300,7 @@ export function createPaperRenderer(
     };
   }
   function coverEdge(cover: ReturnType<typeof leaf>) {
-    const boundary: number[] = [];
-    for (let x = 0; x < PAGE_COLUMNS; x++) boundary.push(x);
-    for (let y = 0; y < PAGE_ROWS; y++)
-      boundary.push(y * PAGE_STRIDE + PAGE_COLUMNS);
-    for (let x = PAGE_COLUMNS; x > 0; x--)
-      boundary.push(PAGE_ROWS * PAGE_STRIDE + x);
-    for (let y = PAGE_ROWS; y > 0; y--) boundary.push(y * PAGE_STRIDE);
-    const geometry = new THREE.BufferGeometry();
-    const vertices = new Float32Array(boundary.length * 18);
-    geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
-    const material = new THREE.MeshStandardMaterial({
-      color: coverEdgeColor,
-      roughness: 0.85,
-      side: THREE.DoubleSide,
-    });
-    const mesh = new THREE.Mesh(geometry, material);
-    mesh.frustumCulled = false;
-    mesh.castShadow = false;
-    cover.mesh.add(mesh);
-    return {
-      mesh,
-      update() {
-        const points = cover.geometry.attributes.position;
-        const normals = cover.geometry.attributes.normal;
-        for (let i = 0; i < boundary.length; i++) {
-          const a = boundary[i],
-            b = boundary[(i + 1) % boundary.length];
-          const corners = [
-            [a, 0],
-            [a, COVER_THICKNESS],
-            [b, COVER_THICKNESS],
-            [a, 0],
-            [b, COVER_THICKNESS],
-            [b, 0],
-          ];
-          corners.forEach(([index, depth], corner) => {
-            const offset = i * 18 + corner * 3;
-            vertices[offset] = points.getX(index) - normals.getX(index) * depth;
-            vertices[offset + 1] =
-              points.getY(index) - normals.getY(index) * depth;
-            vertices[offset + 2] =
-              points.getZ(index) - normals.getZ(index) * depth;
-          });
-        }
-        geometry.attributes.position.needsUpdate = true;
-        geometry.computeVertexNormals();
-      },
-      dispose() {
-        geometry.dispose();
-        material.dispose();
-      },
-    };
+    return createCoverEdge(cover,PAGE_COLUMNS,PAGE_ROWS,coverEdgeColor,COVER_THICKNESS);
   }
   // A folded sheet keeps its identity and base pose for the life of the book.
   // Resampling a handful of proxy sheets made the entire fan slide each turn.

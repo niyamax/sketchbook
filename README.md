@@ -18,12 +18,12 @@ All sketches were generated with AI for this demo. The cover texture is AI-gener
 
 ## Features
 
-- Two-page 3D desktop spreads with curved paper, hard covers, draggable corners and keyboard navigation.
+- Two-page 3D desktop spreads with a sculpted binding gutter, curved paper, separate black covers, draggable corners and keyboard navigation.
 - A folded-paper mobile reader with tap, swipe, hold and grouped rapid turns.
 - An unprinted charcoal cover, 4:5 pages, rounded opening corners and subtle lighting.
 - Reduced-motion support, accessible page announcements and a DOM fallback when WebGL is unavailable.
 
-Both layouts share the same Three.js paper material, textures and lighting. The layout switches at 768 px. This is a frontend-only demo with no backend or persistent storage.
+Both layouts share the same Three.js paper material, textures and lighting. The covers open and close independently of the paper stack. The layout switches at 768 px. This is a frontend-only demo with no backend or persistent storage.
 
 ## Run locally
 

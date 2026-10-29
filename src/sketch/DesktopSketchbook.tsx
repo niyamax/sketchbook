@@ -26,7 +26,7 @@ export default function DesktopSketchbook() {
     const [size, setSize] = useState(dimensions), [page, setPage] = useState(0), [presented, setPresented] = useState(false), [webgl, setWebgl] = useState(false);
     const frame = useRef<HTMLDivElement>(null), host = useRef<HTMLDivElement>(null), sources = useRef<HTMLDivElement>(null), nav = useRef<HTMLElement>(null), dom = useRef<HTMLDivElement>(null), ground = useRef<HTMLDivElement>(null);
     const engine = useRef<ReturnType<typeof createDesktopPaperRenderer> | null>(null), current = useRef(0), desired = useRef(0), turn = useRef<Turn | null>(null), drag = useRef<Drag | null>(null), animation = useRef(0), ready = useRef(false), generation = useRef(0);
-    const drive = useRef<() => void>(() => { }), last = Math.ceil(sketches.length / 2) + 1, reduced = useReducedMotion();
+    const drive = useRef<() => void>(() => { }), last = Math.ceil(sketches.length / 2) + 2, reduced = useReducedMotion();
     const pageIndex = useCallback((spread: number) => spread === 0 ? 0 : spread === last ? last * 2 - 1 : spread * 2 - 1, [last]);
     const apply = useCallback((pose: BookPose) => {
         if (nav.current)
@@ -162,7 +162,8 @@ export default function DesktopSketchbook() {
         animateTurn(active, complete ? (gesture.direction === 1 ? 1 : 0) : (gesture.direction === 1 ? 0 : 1));
     }
     const closed = page === 0 || page === last, pose = restingBookPose(pageIndex(page), last * 2), left = page === 0 ? null : page === last ? last * 2 - 1 : page * 2 - 1, right = page === last ? null : page === 0 ? 0 : page * 2;
-    const face = (index: number | null) => index === null ? null : index === 0 || index === last * 2 - 1 ? <SketchPage cover coverSide={index === 0 ? 'front' : 'back'}/> : <SketchPage page={index}/>;
+    const face = (index: number | null) => index === null ? null : index < 2 || index >= last * 2 - 2 ? <SketchPage cover coverSide={index === 0 || index === last * 2 - 2 ? 'front' : 'back'}/> : <SketchPage page={index-1} side={index%2===0?'right':'left'}/>;
+    const announcement=page===0?'Front cover':page===last?'Back cover':page===1?'Inside front cover · Page 1':page===last-1?(sketches.length%2?'Inside back cover':'Page '+sketches.length+' · Inside back cover'):`Pages ${page*2-2}–${Math.min(page*2-1,sketches.length)}`;
     return <div className={`sketch-desktop ${closed ? 'is-closed' : ''}`}>
     <div ref={frame} className={`sketch-desktop-frame ${presented ? 'is-presented' : 'is-preparing'} ${webgl ? 'has-desktop-paper' : ''}`} style={{ width: size.width * 2, height: size.height }} aria-busy={!presented} role="group" aria-label="Sketchbook. Use the arrows or drag a page to turn." tabIndex={presented ? 0 : -1} onPointerDown={event => { if (!event.isPrimary || event.button !== 0 || (event.target as HTMLElement).closest('button') || !ready.current || turn.current)
         return; const rect = event.currentTarget.getBoundingClientRect(), x = event.clientX - rect.left; const bounds = restingBookPose(pageIndex(current.current), last * 2); const middle = size.width; if (Math.abs(x - middle) > bounds.width * size.width / 2)
@@ -176,9 +177,9 @@ export default function DesktopSketchbook() {
       <div ref={sources} className="sketch-page-sources" aria-hidden="true">{Array.from({ length: last * 2 }, (_, index) => <div key={index} className="sketch-page-source" style={{ width: size.width, height: size.height }}>{face(index)}</div>)}</div>
       <div ref={host} className="sketch-desktop-canvas" aria-hidden="true"/>
       <nav ref={nav} className="sketch-side-navigation" style={{ width: pose.width * size.width }} aria-label="Sketchbook pages">
-        <button type="button" aria-label="Previous pages" disabled={!presented || page === 0} onClick={() => request(-1)}><PikaChevron direction="left"/></button>
-        <span className="sr-only" aria-live="polite">{page === 0 ? 'Front cover' : page === last ? 'Back cover' : `Pages ${pageIndex(page)}–${pageIndex(page) + 1}`}</span>
-        <button type="button" aria-label={page === 0 ? 'Open the sketchbook' : 'Next pages'} disabled={!presented || page === last} onClick={() => request(1)}><PikaChevron direction="right"/></button>
+        <button type="button" aria-label={page===1?'Close the sketchbook':page===last?'Open the sketchbook':'Previous pages'} disabled={!presented || page === 0} onClick={() => request(-1)}><PikaChevron direction="left"/></button>
+        <span className="sr-only" aria-live="polite">{announcement}</span>
+        <button type="button" aria-label={page === 0 ? 'Open the sketchbook' : page===last-1?'Close the sketchbook':'Next pages'} disabled={!presented || page === last} onClick={() => request(1)}><PikaChevron direction="right"/></button>
       </nav>
     </div>
   </div>;

@@ -53,3 +53,6 @@
 .sketch-spread-ground span { position: absolute; top: 0; width: 50%; height: 100%; }
 .sketch-spread-ground span:first-child { left: 0; border-radius: 14px 0 0 14px; }
 .sketch-spread-ground span:last-child { left: 50%; border-radius: 0 14px 14px 0; }
+
+.sketch-desktop-dom .sketch-dom-page:first-child .sketch-paper { background: linear-gradient(to left,#00000024,transparent 44px),var(--sketchbook-paper); }
+.sketch-desktop-dom .sketch-dom-page:last-child .sketch-paper { background: linear-gradient(to right,#00000018,transparent 44px),var(--sketchbook-paper); }

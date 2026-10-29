@@ -161,6 +161,7 @@ export function createPaperMaterial(blank: THREE.Texture, stock: THREE.Texture) 
     const faceInk = { value: 1 };
     const bindingShade = { value: 0.1 };
     const paperFill = { value: 0.45 };
+    const gutter = { value: 0 };
     const material = new THREE.MeshPhysicalMaterial({
         map: blank,
         side: THREE.DoubleSide,
@@ -179,9 +180,10 @@ export function createPaperMaterial(blank: THREE.Texture, stock: THREE.Texture) 
         shader.uniforms.faceInkAmount = faceInk;
         shader.uniforms.bindingShade = bindingShade;
         shader.uniforms.paperFill = paperFill;
+        shader.uniforms.gutterAmount = gutter;
         shader.uniforms.stockMap = { value: stock };
         shader.fragmentShader =
-            "uniform sampler2D backMap; uniform sampler2D stockMap; uniform float faceInkAmount; uniform float bindingShade; uniform float paperFill;\n" +
+            "uniform sampler2D backMap; uniform sampler2D stockMap; uniform float faceInkAmount; uniform float bindingShade; uniform float paperFill; uniform float gutterAmount;\n" +
                 shader.fragmentShader;
         shader.fragmentShader = shader.fragmentShader.replace("#include <map_fragment>", `
     vec4 frontInk = mix(texture2D(backMap, vMapUv), texture2D(map, vMapUv), faceInkAmount);
@@ -189,7 +191,8 @@ export function createPaperMaterial(blank: THREE.Texture, stock: THREE.Texture) 
     diffuseColor *= gl_FrontFacing ? frontInk : backInk;
     float stockGrain = texture2D(stockMap, vMapUv * vec2(1.0, ${ASPECT})).r;
     diffuseColor.rgb *= 1.0 + (stockGrain - 0.5) * 0.12;
-    diffuseColor.rgb *= 1.0 - bindingShade * exp(-vMapUv.x * 28.0);
+    float bindingProfile = exp(-vMapUv.x * 28.0);
+    diffuseColor.rgb *= 1.0 - bindingShade * bindingProfile;
   `);
         shader.fragmentShader = shader.fragmentShader.replace("#include <roughnessmap_fragment>", `#include <roughnessmap_fragment>
      roughnessFactor *= 0.92 + stockGrain * 0.16;`);
@@ -197,6 +200,7 @@ export function createPaperMaterial(blank: THREE.Texture, stock: THREE.Texture) 
     // Approximate light scattered into a paper curl, retaining the key's
     // curvature gradient and ink contrast. Bright paper is unchanged.
     outgoingLight = mix(outgoingLight, max(outgoingLight, diffuseColor.rgb), paperFill);
+    outgoingLight *= 1.0 - gutterAmount * bindingProfile;
     #include <opaque_fragment>
     `);
         shader.fragmentShader = shader.fragmentShader.replace("#include <clearcoat_normal_fragment_begin>", `#ifdef USE_CLEARCOAT
@@ -204,5 +208,61 @@ export function createPaperMaterial(blank: THREE.Texture, stock: THREE.Texture) 
       vec3 clearcoatNormal = normalize(mix(nonPerturbedNormal, normal, 0.35));
      #endif`);
     };
-    return { material, back, faceInk, bindingShade, paperFill };
+    return { material, back, faceInk, bindingShade, paperFill, gutter };
+}
+
+export function createCoverEdge(cover:{geometry:THREE.PlaneGeometry;mesh:THREE.Object3D},columns:number,rows:number,color:string,thickness:number) {
+    const stride=columns+1;
+    const boundary: number[] = [];
+    for (let x = 0; x < columns; x++) boundary.push(x);
+    for (let y = 0; y < rows; y++)
+      boundary.push(y * stride + columns);
+    for (let x = columns; x > 0; x--)
+      boundary.push(rows * stride + x);
+    for (let y = rows; y > 0; y--) boundary.push(y * stride);
+    const geometry = new THREE.BufferGeometry();
+    const vertices = new Float32Array(boundary.length * 18);
+    geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+    const material = new THREE.MeshStandardMaterial({
+      color: color,
+      roughness: 0.85,
+      side: THREE.DoubleSide,
+    });
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.frustumCulled = false;
+    mesh.castShadow = false;
+    cover.mesh.add(mesh);
+    return {
+      mesh,
+      update() {
+        const points = cover.geometry.attributes.position;
+        const normals = cover.geometry.attributes.normal;
+        for (let i = 0; i < boundary.length; i++) {
+          const a = boundary[i],
+            b = boundary[(i + 1) % boundary.length];
+          const corners = [
+            [a, 0],
+            [a, thickness],
+            [b, thickness],
+            [a, 0],
+            [b, thickness],
+            [b, 0],
+          ];
+          corners.forEach(([index, depth], corner) => {
+            const offset = i * 18 + corner * 3;
+            vertices[offset] = points.getX(index) - normals.getX(index) * depth;
+            vertices[offset + 1] =
+              points.getY(index) - normals.getY(index) * depth;
+            vertices[offset + 2] =
+              points.getZ(index) - normals.getZ(index) * depth;
+          });
+        }
+        geometry.attributes.position.needsUpdate = true;
+        geometry.computeVertexNormals();
+      },
+      dispose() {
+        geometry.dispose();
+        material.dispose();
+      },
+    };
 }
