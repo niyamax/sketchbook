@@ -1,0 +1,24 @@
+@import "tailwindcss" source(none);
+@import "./styles/book.css";
+@import "./styles/mobile-book.css";
+@import "./styles/sketchbook.css";
+@source "./";
+
+:root {
+  --font-sans: ui-sans-serif, system-ui, sans-serif;
+  --sketchbook-content: #fff;
+  --sketchbook-chrome: #fff;
+  color: #26313d;
+  background: #fff;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color-scheme: light;
+}
+body { margin: 0; min-width: 280px; background: #fff; }
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: default; opacity: .35; }
+:focus-visible { outline: 2px solid #2366af; outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; }
+}

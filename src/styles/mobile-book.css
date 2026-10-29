@@ -1,0 +1,69 @@
+/* Mobile paper layout and touch controls. */
+.sketchbook-mobile {
+  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  position: relative; height: 100vh; height: 100dvh; overflow: hidden;
+  color: var(--sketchbook-ink); font: 14px/1.5 var(--font-sans); -webkit-font-smoothing: antialiased;
+}
+.sketchbook-mobile *, .sketchbook-mobile *::before, .sketchbook-mobile *::after { box-sizing: border-box; }
+.sketchbook-mobile button, .sketchbook-mobile a { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.sketchbook-mobile button { cursor: pointer; }
+.sketchbook-mobile a { text-decoration: none; }
+.sketchbook-mobile :is(button, a, input, textarea, select):focus-visible { outline: 2px solid var(--sketchbook-accent); outline-offset: 3px; }
+.sketchbook-mobile button:disabled { opacity: .35; cursor: default; }
+
+.mobile-icon-button { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; border: 0; border-radius: var(--sketchbook-control-radius); background: transparent; color: var(--sketchbook-ink); }
+.mobile-icon-button:hover { background: #152b4510; }
+.mobile-book-reader { max-width: 350px; margin: auto; }
+.mobile-folded-book {
+  --book-paper: var(--sketchbook-paper);
+  --book-canvas-scale-x: 2.8;
+  --book-canvas-scale-y: 1.6;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  margin: 0;
+  touch-action: pan-y pinch-zoom;
+  isolation: isolate;
+  outline: none;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: grab;
+}
+.mobile-folded-book.is-turning { cursor: grabbing; }
+.mobile-book-binding { position: absolute; inset: 1px -3px -7px -8px; border-radius: 7px; background: var(--sketchbook-cover); box-shadow: -1px 1px 2px #80523130, 2px 20px 22px -13px #51432f35, 1px 3px 5px #51432f16; }
+.mobile-book-paper-edges { position: absolute; inset: 0 -3px -5px -2px; border-radius: 1px 2px 3px 1px; background: repeating-linear-gradient(0deg, #dcd6c9 0 1px, #fbf7eb 1px 2px); border-right: 1px solid #e2dcce; box-shadow: -3px 0 #f2eddf, -5px 1px #d6c6ab; }
+.mobile-book-resting-page, .mobile-book-under-source { position: absolute; inset: 0; }
+.mobile-book-under-source { opacity: 0; pointer-events: none; }
+.has-paper-renderer .mobile-book-resting-page { opacity: 0; }
+.has-paper-renderer .mobile-book-binding, .has-paper-renderer .mobile-book-paper-edges { display: none; }
+.mobile-book-canvas {
+  display: none;
+  position: absolute;
+  width: calc(var(--book-canvas-scale-x) * 100%);
+  height: calc(var(--book-canvas-scale-y) * 100%);
+  left: calc((1 - var(--book-canvas-scale-x)) * 50%);
+  top: calc((1 - var(--book-canvas-scale-y)) * 50%);
+  pointer-events: none;
+  z-index: 1;
+}
+.has-paper-renderer .mobile-book-canvas { display: block; }
+.mobile-book-canvas canvas { display: block; width: 100% !important; height: 100% !important; }
+.mobile-book-edge { z-index: 3; position: absolute; top: 0; bottom: 0; width: 36px; background: none; border: 0; padding: 0; touch-action: pan-y !important; }
+.mobile-book-edge-left { left: 0; }
+.mobile-book-edge-right { right: 0; }
+.mobile-book-edge:disabled { pointer-events: none; }
+.mobile-book-edge:focus-visible { outline-offset: -3px !important; }
+.mobile-book-paper {
+  position: relative;
+  width: 100%; height: 100%;
+  padding: 23px 22px 31px 26px;
+  overflow: hidden;
+  background: var(--sketchbook-paper);
+  border-radius: 4px;
+}
+.mobile-book-navigation { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; color: var(--sketchbook-muted); font-size: 12px; }
+.mobile-book-announcement { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-folded-book * { animation: none !important; transition: none !important; }
+}
