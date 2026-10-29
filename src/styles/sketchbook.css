@@ -19,8 +19,9 @@
 .sketch-side-navigation button:last-child { right: -64px; }
 .sketch-side-navigation button,.mobile-book-navigation.is-minimal button { display: grid; place-items: center; border: 0; border-radius: 50%; color: #5e625d; background: transparent; pointer-events: auto; opacity: 1; visibility: visible; transition: opacity 200ms ease-out; }
 .sketch-side-navigation button:hover:not(:disabled),.mobile-book-navigation.is-minimal button:hover:not(:disabled) { background: #f6f6f3; }
-.sketch-side-navigation button:disabled,.mobile-book-navigation.is-minimal button:disabled,
-.sketch-side-navigation.is-cover-moving button,.mobile-book-navigation.is-minimal.is-cover-moving button { opacity: 0; visibility: hidden; pointer-events: none; transition: none; }
+.sketch-side-navigation button:disabled,
+.sketch-side-navigation.is-cover-moving button { opacity: 0; visibility: hidden; pointer-events: none; transition: none; }
+.mobile-book-navigation.is-minimal button:disabled { opacity: .35; pointer-events: none; cursor: default; }
 @media(prefers-reduced-motion:reduce) { .sketch-side-navigation button,.mobile-book-navigation.is-minimal button { transition: none; } }
 .sketch-mobile-content { display: grid; place-items: center; width: 100%; min-height: 100dvh; padding: 40px 56px; }
 .sketchbook-shell.is-mobile { height: auto; min-height: 100dvh; overflow-x: clip; overflow-y: visible; }

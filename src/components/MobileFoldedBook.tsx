@@ -532,7 +532,7 @@ export function MobileFoldedBook({
           }}
         />
       </div>
-      <nav className={`mobile-book-navigation is-minimal ${turn && (turn.from === 0 || turn.to === 0) ? "is-cover-moving" : ""}`} aria-label="Sketchbook pages">
+      <nav className="mobile-book-navigation is-minimal" aria-label="Sketchbook pages">
         <button
           className="mobile-icon-button"
           aria-label="Previous sketch"
