@@ -1,6 +1,6 @@
 # Sketchbook
 
-A quiet, interactive sketchbook for the web, with desktop spreads and curled paper on mobile.
+A quiet, interactive sketchbook built with React and Three.js, with desktop spreads and curled paper on mobile.
 
 **[Open the live demo](https://niyamax.github.io/sketchbook/)**
 
@@ -18,12 +18,12 @@ All sketches were generated with AI for this demo. The cover texture is AI-gener
 
 ## Features
 
-- Two-page desktop spreads with hard covers, draggable corners and keyboard navigation.
+- Two-page 3D desktop spreads with curved paper, hard covers, draggable corners and keyboard navigation.
 - A folded-paper mobile reader with tap, swipe, hold and grouped rapid turns.
 - An unprinted charcoal cover, 4:5 pages, rounded opening corners and subtle lighting.
 - Reduced-motion support, accessible page announcements and a DOM fallback when WebGL is unavailable.
 
-The layout switches at 768 px. This is a frontend-only demo with no backend or persistent storage.
+Both layouts share the same Three.js paper material, textures and lighting. The layout switches at 768 px. This is a frontend-only demo with no backend or persistent storage.
 
 ## Run locally
 

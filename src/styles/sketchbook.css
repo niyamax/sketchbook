@@ -1,3 +1,4 @@
+.sketchbook-shell.is-desktop { overflow: hidden; }
 .sketchbook-shell { position: relative; min-height: 100dvh; background: #fff; color: #333; overflow-x: clip; }
 .sketch-demo-note { position: absolute; right: 24px; bottom: max(16px,env(safe-area-inset-bottom)); left: 24px; margin: 0; color: #969690; font-size: 11px; line-height: 1.5; text-align: center; pointer-events: none; }
 .sketchbook-cover { border-radius: 0 16px 16px 0; background: #242424; box-shadow: inset 2px 0 3px #00000020, inset -1px 0 2px #00000020; }
@@ -12,8 +13,6 @@
 .sketch-illustration { display: block; width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; user-select: none; pointer-events: none; }
 .sketch-desktop { display: flex; min-height: 100dvh; flex-direction: column; align-items: center; justify-content: center; padding: 60px 80px; }
 .sketch-desktop-frame { position: relative; flex-shrink: 0; }
-.sketch-desktop-book { width: 100%; height: 100%;  }
-.sketch-flipbook > .stf__wrapper { height: 100%; }
 .sketch-side-navigation { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); height: 44px; z-index: 5; pointer-events: none; }
 .sketch-side-navigation button { position: absolute; top: 0; width: 44px; height: 44px; }
 .sketch-side-navigation button:first-child { left: -64px; }
@@ -32,13 +31,6 @@
 .sketchbook-shell .mobile-book-binding { border-radius: 0 16px 16px 0; box-shadow: 3px 5px 8px rgba(20,20,20,.075); }
 .mobile-book-navigation.is-minimal { position: absolute; top: 50%; left: -50px; right: -50px; height: 44px; margin: 0; transform: translateY(-50%); z-index: 5; pointer-events: none; }
 
-/* Keep the library's fold-aligned outer gradients, with a quieter treatment. */
-.sketch-flipbook :is(.stf__innerShadow,.stf__hardInnerShadow,.stf__hardShadow) { display: none !important; }
-.sketch-flipbook .stf__outerShadow { opacity: var(--sketch-native-shadow,0); filter: blur(3px); pointer-events: none; }
-.sketch-ground-contact { position: absolute; top: 0; pointer-events: none; }
-/* Confine cover shading to the stationary paper; never shade empty floor. */
-.sketch-cover-contact { position: absolute; z-index: 4; opacity: 0; pointer-events: none; contain: paint; }
-
 /* Reserve the final book layout while the first renderer/cover is prepared. */
 .sketchbook-shell :is(.mobile-book-reader,.sketch-desktop-frame) { opacity: 1; transition: opacity 120ms ease-out; }
 .sketchbook-shell .is-preparing { opacity: 0; pointer-events: none; }
@@ -47,5 +39,17 @@
 .mobile-book-css-ground { display: none; position: absolute; z-index: 0; pointer-events: none; }
 .has-paper-renderer .mobile-book-css-ground { display: block; }
 
-.sketch-desktop-book,.sketch-side-navigation,.sketch-static-ground { transition: none; }
-@media(prefers-reduced-motion:reduce) { .sketch-flipbook :is(.stf__outerShadow,.sketch-cover-contact) { display: none !important; } }
+.sketch-desktop-frame { touch-action: pan-y; user-select: none; cursor: grab; }
+.sketch-desktop-frame:active { cursor: grabbing; }
+.sketch-desktop-dom { position: absolute; inset: 0; display: flex; pointer-events: none; }
+.sketch-dom-page { width: 50%; height: 100%; }
+.has-desktop-paper .sketch-desktop-dom { opacity: 0; }
+.sketch-page-sources { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
+.sketch-page-source { position: absolute; left: 0; top: 0; }
+.sketch-desktop-canvas { display: none; position: absolute; width: 135%; height: 160%; left: -17.5%; top: -30%; pointer-events: none; z-index: 1; }
+.has-desktop-paper .sketch-desktop-canvas { display: block; }
+.sketch-desktop-canvas canvas { display: block; width: 100% !important; height: 100% !important; }
+.sketch-spread-ground { position: absolute; inset: 0; pointer-events: none; }
+.sketch-spread-ground span { position: absolute; top: 0; width: 50%; height: 100%; }
+.sketch-spread-ground span:first-child { left: 0; border-radius: 14px 0 0 14px; }
+.sketch-spread-ground span:last-child { left: 50%; border-radius: 0 14px 14px 0; }

@@ -4,11 +4,6 @@ export function restingBookPose(page: number,pageCount: number): BookPose {
   if(page===pageCount-1)return {center:.5,left:0,width:1,leftRadius:16,rightRadius:0,leftContact:1,rightContact:0};
   return {center:0,left:0,width:2,leftRadius:14,rightRadius:14,leftContact:1,rightContact:1};
 }
-export function coverTurnSide(from: number,direction: number,pageCount: number): 'front'|'back'|null {
-  if((from===0&&direction===0)||(from===1&&direction===1))return 'front';
-  if((from===pageCount-3&&direction===0)||(from===pageCount-1&&direction===1))return 'back';
-  return null;
-}
 // Fractions are measured in page widths. The same cover progress moves the
 // book, ground footprint and navigation; nothing starts after the cover lands.
 export function turningBookPose(from: number,direction: number,progress: number,pageCount: number): BookPose {
