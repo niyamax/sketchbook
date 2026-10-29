@@ -81,6 +81,18 @@ export function MobileFoldedBook({
   latestChange.current = onPageChange;
   const current = Math.max(0, Math.min(page, pages.length - 1));
 
+  function clickChevron(button: HTMLButtonElement, direction: 1 | -1) {
+    button.getAnimations().filter(effect => effect.id === "chevron-click").forEach(effect => effect.cancel());
+    const feedback = button.animate(
+      reduced
+        ? [{ backgroundColor: "#f6f6f3" }, { backgroundColor: "#f6f6f3" }]
+        : [{ backgroundColor: "#f6f6f3" }, { backgroundColor: "#f6f6f3", offset: .3 }, { backgroundColor: "transparent" }],
+      { duration: reduced ? 100 : 240, easing: "ease-out" },
+    );
+    feedback.id = "chevron-click";
+    go(direction);
+  }
+
   useEffect(() => {
     const element = book.current;
     const repaint = () => setRevision(value => value + 1);
@@ -537,7 +549,7 @@ export function MobileFoldedBook({
           className="mobile-icon-button"
           aria-label="Previous sketch"
           disabled={!presented || current === 0 || (turn?.to ?? current) === 0}
-          onClick={() => go(-1)}
+          onClick={(event) => clickChevron(event.currentTarget, -1)}
         >
           <PikaChevron direction="left" />
         </button>
@@ -556,7 +568,7 @@ export function MobileFoldedBook({
           className="mobile-icon-button"
           aria-label={current === 0 ? "Open the book" : "Next sketch"}
           disabled={!presented || current >= pages.length - 1 || (turn?.to ?? current) >= pages.length - 1}
-          onClick={() => go(1)}
+          onClick={(event) => clickChevron(event.currentTarget, 1)}
         >
           <PikaChevron direction="right" />
         </button>
