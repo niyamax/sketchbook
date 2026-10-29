@@ -12,7 +12,9 @@
 .sketchbook-mobile button:disabled { opacity: .35; cursor: default; }
 
 .mobile-icon-button { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; border: 0; border-radius: var(--sketchbook-control-radius); background: transparent; color: var(--sketchbook-ink); }
-.mobile-icon-button:hover { background: #152b4510; }
+@media (hover: hover) and (pointer: fine) {
+  .mobile-icon-button:hover:not(:disabled) { background: #152b4510; }
+}
 .mobile-book-reader { max-width: 350px; margin: auto; }
 .mobile-folded-book {
   --book-paper: var(--sketchbook-paper);

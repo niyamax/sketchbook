@@ -18,7 +18,10 @@
 .sketch-side-navigation button:first-child { left: -64px; }
 .sketch-side-navigation button:last-child { right: -64px; }
 .sketch-side-navigation button,.mobile-book-navigation.is-minimal button { display: grid; place-items: center; border: 0; border-radius: 50%; color: #5e625d; background: transparent; pointer-events: auto; opacity: 1; visibility: visible; transition: opacity 200ms ease-out; }
-.sketch-side-navigation button:hover:not(:disabled),.mobile-book-navigation.is-minimal button:hover:not(:disabled) { background: #f6f6f3; }
+@media (hover: hover) and (pointer: fine) {
+  .sketch-side-navigation button:hover:not(:disabled),.mobile-book-navigation.is-minimal button:hover:not(:disabled) { background: #f6f6f3; }
+}
+.mobile-book-navigation.is-minimal button:active:not(:disabled) { background: #f6f6f3; }
 .sketch-side-navigation button:disabled,
 .sketch-side-navigation.is-cover-moving button { opacity: 0; visibility: hidden; pointer-events: none; transition: none; }
 .mobile-book-navigation.is-minimal button:disabled { opacity: .35; pointer-events: none; cursor: default; }
