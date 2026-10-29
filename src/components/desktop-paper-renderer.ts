@@ -3,7 +3,7 @@ import { PAGE_ASPECT as H } from '../sketch/geometry';
 import { BOOK_LIGHT } from '../sketch/lighting';
 import { restingBookPose, turningBookPose } from '../sketch/book-pose';
 import { addBookLight, createBookRenderer, createPaperMaterial, paperStock, paperTexture } from './book-rendering';
-const COLS = 64, CORNER_ROWS = 12, ROWS = 16 + CORNER_ROWS * 2, SCALE_X = 1.35, SCALE_Y = 1.6;
+const CORNER = .036, COLS = 64, CORNER_ROWS = 12, ROWS = 16 + CORNER_ROWS * 2, SCALE_X = 1.35, SCALE_Y = 1.6;
 export function createDesktopPaperRenderer(host: HTMLElement, width: number, height: number, sources: HTMLElement[]) {
     const renderer = createBookRenderer(host, width * 2 * SCALE_X, height * SCALE_Y);
     const camera = new THREE.PerspectiveCamera(2 * Math.atan(H * SCALE_Y / (2 * 6.2)) * 180 / Math.PI, 2 * width * SCALE_X / (height * SCALE_Y), 1, 12);
@@ -23,7 +23,7 @@ export function createDesktopPaperRenderer(host: HTMLElement, width: number, hei
         const mesh = new THREE.Mesh(geometry, paper.material);
         mesh.frustumCulled = false;
         book.add(mesh);
-        return { ...paper, geometry, mesh, cornerMode: null as boolean | null };
+        return { ...paper, geometry, mesh, cornersReady: false };
     }
     type Leaf = ReturnType<typeof leaf>;
     const left = leaf(), right = leaf(), moving = leaf(), leftBoard = leaf(), rightBoard = leaf();
@@ -42,22 +42,23 @@ export function createDesktopPaperRenderer(host: HTMLElement, width: number, hei
     }
     function shape(paper: Leaf, side: -1 | 1, progress = 0, hard = false, grab = 0, oversize = 1) {
         const points = paper.geometry.attributes.position, uv = paper.geometry.attributes.uv;
-        if (paper.cornerMode !== hard) {
+        if (!paper.cornersReady) {
             // Sample the quarter-circle by angle, including both tangent
             // endpoints. Extra rows stay in the corners; the centre keeps
             // its original 16 rows and the curl keeps its 64 columns.
-            const edge = CORNER_ROWS / ROWS, radius = (hard ? .036 : .032) / H;
+            // Matching cutouts keep underlying corners inside the cover.
+            const edge = CORNER_ROWS / ROWS, radius = CORNER / H;
             const arc = (t: number) => radius * (1 - Math.cos(t * Math.PI / 2));
             for (let i = 0; i < uv.count; i++) {
                 const v = 1 - Math.floor(i / (COLS + 1)) / ROWS;
                 uv.setY(i, v <= edge ? arc(v / edge) : v >= 1 - edge ? 1 - arc((1 - v) / edge) : radius + (v - edge) / (1 - 2 * edge) * (1 - 2 * radius));
             }
             uv.needsUpdate = true;
-            paper.cornerMode = hard;
+            paper.cornersReady = true;
         }
         for (let i = 0; i < points.count; i++) {
             const u = uv.getX(i), v = uv.getY(i), y = (v - .5) * H * oversize;
-            const corner = (hard ? .036 : .032) * oversize;
+            const corner = CORNER * oversize;
             const cornerY = Math.max(0, Math.abs(y) - (H * oversize / 2 - corner));
             const inset = corner - Math.sqrt(Math.max(0, corner * corner - cornerY * cornerY));
             const reach = u * (oversize - inset);
@@ -104,6 +105,7 @@ export function createDesktopPaperRenderer(host: HTMLElement, width: number, hei
         boards(p);
         moving.mesh.visible = false;
         shade.visible = false;
+        left.mesh.position.z = right.mesh.position.z = .002;
         left.mesh.visible = spread !== 0;
         right.mesh.visible = spread !== last;
         if (left.mesh.visible) {
@@ -135,6 +137,11 @@ export function createDesktopPaperRenderer(host: HTMLElement, width: number, hei
         }
         left.mesh.visible = from > 0 && p < 1;
         right.mesh.visible = from < lastTurn && p > 0;
+        // Keep the revealed sheets underneath the turning leaf, even at
+        // near-zero angles. They reach their resting depth before promotion.
+        // Coplanar surfaces here make inner-page ink flicker through covers.
+        left.mesh.position.z = .002 - .004 * p;
+        right.mesh.position.z = .002 - .004 * (1 - p);
         configure(moving, from * 2, (from === 0 && p < .5) || (from === lastTurn && p > .5), from * 2 + 1);
         moving.mesh.visible = true;
         moving.mesh.position.z = .002 + .002 * Math.sin(Math.PI * p) ** 2;
