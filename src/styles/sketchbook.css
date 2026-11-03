@@ -60,3 +60,8 @@
 
 .sketch-desktop-dom .sketch-dom-page:first-child .sketch-paper { background: linear-gradient(to left,#00000024,transparent 44px),var(--sketchbook-paper); }
 .sketch-desktop-dom .sketch-dom-page:last-child .sketch-paper { background: linear-gradient(to right,#00000018,transparent 44px),var(--sketchbook-paper); }
+
+.sketch-github-link { position: absolute; top: 24px; right: 24px; z-index: 10; display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid #dededb; border-radius: var(--sketchbook-control-radius); background: #fff; color: var(--sketchbook-cover); text-decoration: none; }
+.sketch-github-link:focus-visible { outline: 2px solid var(--sketchbook-accent); outline-offset: 4px; }
+@media (hover: hover) and (pointer: fine) { .sketch-github-link:hover { background: #f6f6f3; border-color: #b8b8b3; } }
+.sketch-github-link:active { background: #ededeb; }
