@@ -27,10 +27,12 @@ Both layouts share the same Three.js paper material, textures and lighting. The 
 
 ## Run locally
 
+To make your own book, **[fork this repository](https://github.com/niyamax/sketchbook/fork)** into your GitHub account first. Customize and publish your fork; the original repository is maintained by Niyas.
+
 Requires **Node.js 22 or newer** and npm.
 
 ```sh
-git clone https://github.com/niyamax/sketchbook.git
+git clone https://github.com/YOUR-USERNAME/sketchbook.git
 cd sketchbook
 npm ci
 npm run dev
@@ -68,7 +70,11 @@ GITHUB_PAGES=true npm run build
 GITHUB_PAGES=true npm run preview
 ```
 
-Open `/sketchbook/` on the preview server. For a fork, update the Pages base in `vite.config.ts` and enable GitHub Actions as the Pages source.
+Open `/sketchbook/` on the preview server. In your fork, enable GitHub Actions and select **Settings → Pages → Build and deployment → Source → GitHub Actions**. If you rename the repository, update the Pages base in `vite.config.ts` to match. Your published book will be at `https://YOUR-USERNAME.github.io/YOUR-REPOSITORY/`.
+
+## Contributing to the original
+
+For improvements to the shared project, open a pull request from your fork. Changes to `main` require a pull request, a successful **Verify build** check and resolved review conversations. Only the maintainer has write access to this repository.
 
 ## License and credits
 
