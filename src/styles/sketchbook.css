@@ -1,6 +1,12 @@
 .sketchbook-shell.is-desktop { overflow: hidden; }
 .sketchbook-shell { position: relative; min-height: 100dvh; background: #fff; color: #333; overflow-x: clip; }
-.sketch-demo-note { position: absolute; right: 24px; bottom: max(16px,env(safe-area-inset-bottom)); left: 24px; margin: 0; color: #969690; font-size: 11px; line-height: 1.5; text-align: center; pointer-events: none; }
+.sketch-footer { position: absolute; right: 24px; bottom: max(16px,env(safe-area-inset-bottom)); left: 24px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.sketch-demo-note { margin: 0; color: #969690; font-size: 11px; line-height: 1.5; text-align: center; pointer-events: none; }
+.sketch-fork-link { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 1px solid #080808; border-radius: var(--sketchbook-control-radius); background: var(--sketchbook-cover); color: #fff; font: 600 13px/1.5 var(--font-sans); text-decoration: none; }
+.sketch-fork-link svg { flex-shrink: 0; }
+.sketch-fork-link:focus-visible { outline: 2px solid var(--sketchbook-accent); outline-offset: 4px; }
+@media (hover: hover) and (pointer: fine) { .sketch-fork-link:hover { background: #383838; } }
+.sketch-fork-link:active { background: #080808; }
 .sketchbook-cover { border-radius: 0 16px 16px 0; background: #242424; box-shadow: inset 2px 0 3px #00000020, inset -1px 0 2px #00000020; }
 .cover-stock-image { display: block; width: 100%; height: 100%; object-fit: cover; user-select: none; pointer-events: none; }
 .sketch-page { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--sketchbook-paper); }
@@ -11,7 +17,7 @@
 .sketch-page .sketchbook-cover { width: 100%; height: 100%; border-radius: inherit; }
 .sketch-paper.mobile-book-paper { border-radius: inherit; padding: 0; background: var(--sketchbook-paper); box-shadow: inset 5px 0 10px #00000004; }
 .sketch-illustration { display: block; width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; user-select: none; pointer-events: none; }
-.sketch-desktop { display: flex; min-height: 100dvh; flex-direction: column; align-items: center; justify-content: center; padding: 60px 80px; }
+.sketch-desktop { display: flex; min-height: 100dvh; flex-direction: column; align-items: center; justify-content: center; padding: 60px 80px 124px; }
 .sketch-desktop-frame { position: relative; flex-shrink: 0; }
 .sketch-side-navigation { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); height: 44px; z-index: 5; pointer-events: none; }
 .sketch-side-navigation button { position: absolute; top: 0; width: 44px; height: 44px; }
@@ -26,7 +32,7 @@
 .sketch-side-navigation.is-cover-moving button { opacity: 0; visibility: hidden; pointer-events: none; transition: none; }
 .mobile-book-navigation.is-minimal button:disabled { opacity: .35; pointer-events: none; cursor: default; }
 @media(prefers-reduced-motion:reduce) { .sketch-side-navigation button,.mobile-book-navigation.is-minimal button { transition: none; } }
-.sketch-mobile-content { display: grid; place-items: center; width: 100%; min-height: 100dvh; padding: 40px 56px; }
+.sketch-mobile-content { display: grid; place-items: center; width: 100%; min-height: 100dvh; padding: 40px 56px 124px; }
 .sketchbook-shell.is-mobile { height: auto; min-height: 100dvh; overflow-x: clip; overflow-y: visible; }
 .sketchbook-shell .mobile-book-reader { position: relative; width: 100%; max-width: 350px; }
 .sketchbook-shell .mobile-folded-book { aspect-ratio: 4 / 5; --book-canvas-scale-y: 2.2; }
